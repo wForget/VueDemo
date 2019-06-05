@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>router</title>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <script src="https://cdn.bootcss.com/vue-router/3.0.6/vue-router.js"></script>
+</head>
+<body>
+
+    <div id="app1">
+        <!-- 使用 router-link 组件来导航. -->
+        <!-- 通过传入 `to` 属性指定链接. -->
+        <!-- <router-link> 默认会被渲染成一个 `<a>` 标签 -->
+        <router-link to="/foo">Go to foo</router-link>
+        <router-link to="/bar">Go to bar</router-link>
+        <router-link to="/foobar">Go to foobar</router-link>
+        <router-link to="/user/1/name/w?age=10">user1</router-link>
+        <router-link to="/user/2/name/z?age=20">user2</router-link>
+        <router-link to="/test">Go to test</router-link>
+        <button @click="toUser(3)">push to user3</button>
+        <router-link :to="{ name: 'user', params: { id: 4, name: 'b' }, query: {age: 40}}">user4</router-link>
+
+        <!-- 路由出口 -->
+        <!-- 路由匹配到的组件将渲染在这里 -->
+        <router-view></router-view>
+        <router-view name="a"></router-view>
+        <router-view name="b"></router-view>
+    </div>
+
+</body>
+<script>
+    // 1. 定义路由组件
+    // 可以从其他文件 import 进来
+    const Foo = {
+        template: '<div>foo</div>'
+    }
+    const Bar = {
+        template: '<div>bar</div>'
+    }
+    const User = {
+        template: '<div>User {{ $route.params.id }} {{ $route.params.name  }} {{ $route.query.age }}</div>'
+    }
+    const ERROR_404 = {
+        template: '<div>404</div>'
+    }
+    // 2. 定义路由
+    // 每个路由应该映射一个组件。其中 component 可以是通过 Vue.extend() 创建的组件构造器，或者，只是一个组件配置对象。
+    const routes = [
+        // 命名视图
+        {
+            path: '/foobar',
+            components: {
+                default: ERROR_404,
+                a: Foo,
+                b: Bar
+            }
+        },
+        {
+            path: '/foo',
+            component: Foo
+        },
+        {
+            path: '/bar',
+            component: Bar
+        },
+        // 动态路径参数 以 : 开头
+        {
+            path: '/user/:id/name/:name',
+            component: User,
+            name: 'user'
+        },
+        // 捕获所有路由或 404 Not found 路由
+        {
+            path: '*',
+            component: ERROR_404
+        }
+    ]
+
+    // 3. 创建 router 实例，传入 routes 配置
+    const router = new VueRouter({
+        routes  // 缩写，相当于 routes: routes
+    })
+
+    // 4. 创建和挂载根实例
+    // 记得要通过 router 配置参数注入路由，从而让整个应用都有路由功能
+    // const app1 = new Vue({
+    //     el: '#app1',
+    //     router
+    // })
+    const app1 = new Vue({
+        router,
+        methods: {
+            toUser(id) {
+                this.$router.push({path: '/user/3/name/a?age=30'})
+            }
+        }
+    }).$mount('#app1')
+</script>
+</html>

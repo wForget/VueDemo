@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vuex</title>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <script src="https://cdn.bootcss.com/vuex/3.1.1/vuex.js"></script>
+</head>
+<body>
+
+    <div id="app1">
+        <div>app1: {{ count }}</div>
+        <button @click="inc">inc</button>
+        <button @click="add(10)">add</button>
+    </div>
+
+    <div id="app2">
+        <div>app2: {{ count }}</div>
+    </div>
+
+    <div id="app3">
+    </div>
+
+    <div id="app4">
+        <div>app4:
+            <div>count: {{ count }}</div>
+            <div>countAlias: {{ countAlias }}</div>
+            <div>countPlusLocalState: {{ countPlusLocalState }}</div>
+        </div>
+    </div>
+
+    <div id="app5">
+        <div>app5: {{ count }}</div>
+    </div>
+
+    <div id="app6">
+        <div>app6:
+            <div>first: {{ first }}</div>
+            <div>second: {{ second }}</div>
+        </div>
+    </div>
+
+    <div id="app7">
+        app7:
+        <ul>
+            <li v-for="todo in todos" :key="todo.id">
+                {{ todo.text }}
+            </li>
+        </ul>
+        <div>{{ todoById.text }}</div>
+    </div>
+
+</body>
+
+<script>
+
+    const store = new Vuex.Store({
+        state: {
+            count: 0,
+            todos: [
+                {id: 1, text: 'hello', done: true},
+                {id: 2, text: 'world', done: false}
+            ]
+        },
+        getters: {
+            doneTodos: state => {
+                return state.todos.filter(todo => !todo.done)
+            },
+            getTodoById: (state) => (id) => {
+                return state.todos.find(todo => todo.id === id)
+            }
+        },
+        mutations: {
+            increment(state) {
+                state.count ++
+            },
+            add(state, n) {
+                state.count += n
+            }
+        }
+    })
+
+    const app1 = new Vue({
+        el: '#app1',
+        computed: {
+            count() {
+                return store.state.count;
+            }
+        },
+        methods: {
+            inc() {
+                store.commit('increment')
+            },
+            add(n) {
+                store.commit('add', n)
+            }
+        }
+    })
+
+    const app2 = new Vue({
+        el: '#app2',
+        computed: {
+            count() {
+                return store.state.count;
+            }
+        }
+    })
+
+    const Counter = {
+        template: `<div>Counter: {{ count }}</div>`,
+        computed: {
+            count() {
+                return this.$store.state.count;
+            }
+        }
+    }
+
+    const app3 = new Vue({
+        el: '#app3',
+        store,
+        components: {Counter},
+        template: `
+            <div>
+                <counter></counter>
+            </div>
+        `
+    })
+
+    const app4 = new Vue({
+        el: '#app4',
+        store,
+        data: {
+            localCount: 10
+        },
+        computed: Vuex.mapState({
+            // 箭头函数可使代码更简练
+            count: state => state.count,
+            // 传字符串参数 'count' 等同于 `state => state.count`
+            countAlias: 'count',
+            // 为了能够使用 `this` 获取局部状态，必须使用常规函数
+            countPlusLocalState(state) {
+                return state.count + this.localCount;
+            }
+        })
+    })
+
+    const app5 = new Vue({
+        el: '#app5',
+        store,
+        computed: Vuex.mapState([
+            'count'
+        ])
+    })
+
+    const app6 = new Vue({
+        el: '#app6',
+        store,
+        computed: {
+            first() {
+                return this.$store.state.count + 100;
+            },
+            ...Vuex.mapState({
+                second: 'count'
+            })
+        }
+    })
+
+    const app7 = new Vue({
+        el: '#app7',
+        store,
+        computed: {
+            todos() {
+                return this.$store.getters.doneTodos;
+            },
+            todoById() {
+                return this.$store.getters.getTodoById(1)
+            }
+        }
+    })
+</script>
+
+</html>

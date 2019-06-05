@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue 介绍</title>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+</head>
+<body>
+
+    <div id="app">
+        {{ message}}
+    </div>
+
+    <!-- v-bind 指令 -->
+    <div id="app2">
+        <span v-bind:title="message">
+            鼠标悬停几秒钟查看此处动态绑定的提示信息！
+        </span>
+        <br>
+        <span title="title">title 属性</span>
+    </div>
+    <!-- 条件 v-if -->
+    <div id="app3">
+        <p v-if="seen">
+            现在你看到我了！
+        </p>
+    </div>
+    <!-- 循环 v-for -->
+    <div id="app4">
+        <ol>
+            <li v-for="todo in todos">
+                {{ todo.text }}
+            </li>
+        </ol>
+    </div>
+
+    <!-- 监听事件 v-on -->
+    <div id="app5">
+        <p>{{ message }}</p>
+        <button v-on:click="reverseMessage">逆转消息</button>
+    </div>
+
+    <div id="app6">
+        <p>{{ message }}</p>
+        <input v-model="message">
+    </div>
+
+    <!-- 组件化应用构建 -->
+    <div id="app7">
+        <ol>
+            <todo-item
+                    v-for="item in groceryList"
+                    v-bind:todo="item"
+                    v-bind:key="item.id"
+            >
+            </todo-item>
+        </ol>
+    </div>
+
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue!'
+        }
+    })
+
+    var app2 = new Vue({
+        el: '#app2',
+        data: {
+            message: '页面加载于' + new Date().toLocaleString()
+        }
+    })
+
+    var app3 = new Vue({
+        el: '#app3',
+        data: {
+            seen: true
+        }
+    })
+
+    var app4 = new Vue({
+        el: "#app4",
+        data: {
+            todos: [
+                {text: '学习 JavaScript'},
+                {text: '学习 Vue'},
+                {text: '整个项目'}
+            ]
+        }
+    })
+
+    var app5 = new Vue({
+        el: '#app5',
+        data: {
+            message: 'Hello Vue.js!'
+        },
+        methods: {
+            reverseMessage: function () {
+                this.message = this.message.split('').reverse().join('');
+            }
+        }
+    })
+
+    var app6 = new Vue({
+        el: '#app6',
+        data: {
+            message: 'Hello Vue!'
+        }
+    })
+
+    Vue.component('todo-item', {
+        props: ['todo'],
+        template: '<li>{{ todo.text }}</li>'
+    })
+    var app7 = new Vue({
+        el: '#app7',
+        data: {
+            groceryList: [
+                {id: 0, text: '蔬菜'},
+                {id: 2, text: '奶酪'},
+                {id: 3, text: '随便...'}
+            ]
+        }
+    })
+
+    /**
+     * v-bind 特性被称为 指令。
+     * 指令带有 v- 前缀，以表示它们是 Vue 提供的特殊特性。
+     *
+     * data 存放属性
+     * methods 存放方法
+     *
+     * v-bind 指令，用于标签属性和 Vue 属性的绑定。
+     *
+     * v-on 指令，用于绑定事件。
+     *
+     * v-model 指令，表单输入和应用状态之间的绑定。
+     *
+     */
+</script>
+</html>
